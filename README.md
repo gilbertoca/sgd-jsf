@@ -1,4 +1,4 @@
-sgd-jsf
+SGD-JSF
 =======
 
 Sistema de Gestão de Doações
