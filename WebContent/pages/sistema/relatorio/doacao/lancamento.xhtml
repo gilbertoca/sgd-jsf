@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/template/template_padrao.xhtml">
+
+	<ui:define name="conteudo">
+
+		<style>
+.ui-datatable .ui-datatable-header,.ui-datatable .ui-datatable-footer {
+	padding: 4px 10px;
+	text-align: center;
+}
+
+.ui-datatable .ui-datatable-footer {
+	padding: 4px 10px;
+	text-align: right;
+}
+
+.color-table {
+	color: red;
+}
+</style>
+		<p />
+		<p:outputPanel autoUpdate="true">
+			<h:panelGroup id="mensagens" layout="block">
+				<p:messages id="messages" showDetail="false" autoUpdate="true" />
+			</h:panelGroup>
+		</p:outputPanel>
+
+		<h:form binding="#{doacaoBean.form}" id="form" prependId="false">
+
+			<t:saveState value="#{doacaoBean.doacao}" />
+			<t:saveState value="#{doacaoBean.state}" />
+			<t:saveState value="#{doacaoBean.doacoes}" />
+			<t:saveState value="#{doacaoBean.subTotal}" />
+
+
+			<p:panel header="#{text['relatorio.doacao']}">
+
+				<t:div id="blocoDePesquisa" rendered="true" style="margim-top:20px;">
+
+					<div>
+						<div style="float: left; width: 49%;">
+							<p:panel header="Filtros Opcionais" toggleable="true">
+								<p:focus for="campanha" />
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Campanha" for="campanha" />
+									<p:selectOneMenu id="campanha" value="#{doacaoBean.campanha}">
+										<f:selectItem itemLabel="Selecione" itemValue="" />
+										<f:selectItems value="#{campanhaDao.listaCampanhas}"
+											var="campanha" itemLabel="#{campanha.nome}"
+											itemValue="#{campanha}" />
+									</p:selectOneMenu>
+								</div>
+
+								<div class="clear" />
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Data Inicial" for="inicio" />
+									<p:inputMask value="#{doacaoBean.dataInicio}" mask="99/99/9999"
+										id="inicio">
+										<f:convertDateTime locale="pt_BR" pattern="dd/MM/yyyy" />
+									</p:inputMask>
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Data Final" for="fim" />
+									<p:inputMask value="#{doacaoBean.dataFim}" mask="99/99/9999"
+										id="fim">
+										<f:convertDateTime locale="pt_BR" pattern="dd/MM/yyyy" />
+									</p:inputMask>
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Período Referência" for="referencia" />
+									<p:inputMask value="#{doacaoBean.competencia}" mask="99/9999"
+										id="referencia">
+										<f:convertDateTime locale="pt_BR" pattern="MM/yyyy" />
+									</p:inputMask>
+								</div>
+
+								<div class="clear" />
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Congregação" for="congregacao" />
+									<p:autoComplete value="#{doacaoBean.congregacao}"
+										id="congregacao" var="c" itemLabel="#{c.nome}"
+										itemValue="#{c}" forceSelection="true" size="46"
+										completeMethod="#{doacaoBean.buscaCongregacaoPorNome}"
+										minQueryLength="3" scrollHeight="200"
+										onkeydown="this.value = this.value.toUpperCase()"
+										onkeyup="this.value = this.value.toUpperCase()">
+
+										<p:column>  
+		                    				#{c.nome}  
+           								</p:column>
+
+										<p:column>  
+					                    	#{c.tipoCongregacao.value}  
+           								</p:column>
+
+										<p:ajax event="itemSelect"
+											listener="#{doacaoBean.handleSelectCongregacao}" />
+									</p:autoComplete>
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Semeador" for="semeador" />
+									<p:autoComplete value="#{doacaoBean.semeador}" id="semeador"
+										var="s" itemLabel="#{s.nome}" itemValue="#{s}"
+										forceSelection="true" size="46"
+										completeMethod="#{doacaoBean.buscaSemeadorPorNome}"
+										minQueryLength="3" scrollHeight="200"
+										onkeydown="this.value = this.value.toUpperCase()"
+										onkeyup="this.value = this.value.toUpperCase()">
+
+										<p:column>  
+				                			#{s.nome}  
+                						</p:column>
+
+										<p:column>  
+						                   	#{s.congregacao.toString()}  
+            			   				</p:column>
+										<p:ajax event="itemSelect"
+											listener="#{doacaoBean.handleSelectSemeador}" />
+									</p:autoComplete>
+								</div>
+								<div class="clear" />
+
+								<div style="margin-top: 15px; margin-left: 10px; float: left;">
+									<p:commandButton id="btn_sub" value="Pesquisar" rendered="true"
+										action="#{doacaoBean.executaRelatorioLancamento}"
+										update="tabela" icon="ui-icon-search">
+
+									</p:commandButton>
+								</div>
+								<div class="clear" />
+							</p:panel>
+						</div>
+
+						<div style="float: right; width: 49%;">
+							<p:panel header="Instruções" toggleable="true">								
+									- Utilize o filtro ao lado para uma busca mais refinada
+										ou deixe em branco para listar todos os resultados.
+								<br />
+								<br />
+									- Arraste as colunas da tabela e reposicione conforme sua necessidade.
+									
+								<br />
+								<br />
+									- Data Final: se o campo estiver em branco será considerada a data atual.
+								<br />
+								<br />
+
+								<h:panelGrid columns="1" id="export" rendered="true">
+									<p:panel header="Exportar">
+										<h:commandLink>
+											<p:graphicImage value="/resources/images/excel.jpg" />
+											<p:dataExporter type="xls" target="tabela"
+												fileName="Relatório de Doações"
+												postProcessor="#{doacaoBean.postProcessXLS}" />
+										</h:commandLink>
+
+										<!-- 
+										<h:commandLink>
+											<p:graphicImage value="/resources/images/pdf.png" />
+											<p:dataExporter type="pdf" target="tabela"
+												fileName="Relatório de Doações" preProcessor="#{doacaoBean.preProcessPDF}"/>
+										</h:commandLink>
+										-->
+									</p:panel>
+								</h:panelGrid>
+							</p:panel>
+
+						</div>
+					</div>
+				</t:div>
+
+				<div class="clear"></div>
+
+				<br />
+				<br />
+
+				<t:div id="blocoDeListagem" rendered="true" style="margim-top:20px;">
+					<br />
+
+					<p:dataTable id="tabela" value="#{doacaoBean.doacoes}" var="doacao"
+						paginator="true" paginatorAlwaysVisible="false"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="10,20,30,50,100"
+						currentPageReportTemplate="Página {currentPage} de {totalPages}"
+						paginatorPosition="both" rows="10"
+						emptyMessage="#{text['table.empty']}" draggableColumns="true"
+						sortBy="#{doacao.congregacao}" sortOrder="ascending"
+						>
+
+						<f:facet name="header">
+							<h:outputText value="Lançamentos" />
+						</f:facet>
+
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Código" />
+							</f:facet>
+							<h:outputText value="#{doacao.semeador.codigo}"
+								rendered="#{not doacao.semeador.toString().equals('')}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Semeador" />
+							</f:facet>
+							<h:outputText value="#{doacao.semeador.nome}"
+								rendered="#{not doacao.semeador.toString().equals('')}" />
+								
+							<h:outputText value="DOAÇÃO DE CONGREGAÇÃO" rendered="#{doacao.semeador.toString().length() ge 0 ? 'false' : 'true'}" styleClass="color-table" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Congregação" />
+							</f:facet>
+							<h:outputText value="#{doacao.congregacao.nome}"
+								rendered="#{not doacao.congregacao.toString().equals('')}" />
+							<!-- 
+							-->
+							<h:outputText value="#{doacao.semeador.congregacao.nome}"
+								rendered="#{not doacao.semeador.toString().equals('')}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Valor" />
+							</f:facet>
+
+							<h:outputText value="#{doacao.valor}">
+								<f:convertNumber type="currency" currencyCode="BRL" />
+							</h:outputText>
+
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Campanha" />
+							</f:facet>
+
+							<h:outputText value="#{doacao.campanha.nome}" rendered="#{not doacao.campanha.nome.equals('')}"/>
+
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Data" />
+							</f:facet>
+
+							<h:outputText value="#{doacao.dataLancamento}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputText>
+
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Referência" />
+							</f:facet>
+
+							<h:outputText value="#{doacao.periodoReferencia}">
+								<f:convertDateTime pattern="MM/yyyy" />
+							</h:outputText>
+
+						</p:column>
+
+						<!-- 
+						<p:summaryRow>
+							<p:column colspan="9" style="text-align:right">  
+                				SubTotal:   
+            				</p:column>
+							<p:column style="text-align:right">
+								<h:outputText value="#{doacaoBean.subTotal}">
+									<f:convertNumber type="currency" currencyCode="BRL" />
+								</h:outputText>
+							</p:column>
+						</p:summaryRow>
+-->
+
+						<f:facet name="footer">
+							<p:column>  
+								Registros: #{doacaoBean.doacoes.size()}
+            				</p:column>
+
+							<p:column>  
+                				Total Arrecadado:   
+            				</p:column>
+							<!-- 
+							-->
+							<p:column style="text-align:right">
+								<h:outputText value="#{doacaoBean.subTotal}">
+									<f:convertNumber type="currency" currencyCode="BRL" />
+								</h:outputText>
+							</p:column>
+						</f:facet>
+
+					</p:dataTable>
+
+					<!-- 
+					<h:panelGrid columns="2" id="export" rendered="true">
+						<p:panel header="Exportar">
+							<h:commandLink>
+								<p:graphicImage value="/resources/images/excel.jpg" />
+								<p:dataExporter type="xls" target="tabela"
+									fileName="doacaos" />
+							</h:commandLink>
+
+						</p:panel>
+					</h:panelGrid>
+					-->
+				</t:div>
+
+			</p:panel>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+
+</html>

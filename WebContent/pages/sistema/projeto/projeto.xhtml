@@ -1,0 +1,205 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<h:head>
+</h:head>
+<h:body>
+
+	<ui:composition template="/template/template_padrao.xhtml">
+		<ui:define name="conteudo">
+
+			<script>
+			function campoMoeda() {
+					$(".moeda").priceFormat({
+						prefix : '',
+						thousandsSeparator : '.',
+						centsSeparator : ','
+					});
+				}
+			</script>
+			<p />
+
+			<p:outputPanel autoUpdate="true">
+				<h:panelGroup id="mensagens" layout="block">
+					<p:messages id="messages" showDetail="false" autoUpdate="true" />
+				</h:panelGroup>
+			</p:outputPanel>
+			<h:form binding="#{projetoBean.form}" id="form" prependId="false">
+
+				<t:saveState value="#{projetoBean.projeto}" />
+				<t:saveState value="#{projetoBean.projetos}" />
+				<t:saveState value="#{projetoBean.state}" />
+
+				<p />
+				<p:panel header="Cadastro de Projetos">
+
+					<t:div id="blocoDePesquisa" rendered="#{projetoBean.pesquisando}">
+						<div align="right" style="margin-bottom: 10px;">
+							<h:commandButton value="#{text['label.adicionar']}"
+								action="#{projetoBean.prepareInsert}" styleClass="botao-default">
+								<f:ajax render="@form" />
+							</h:commandButton>
+						</div>
+						<p />
+						<p:dataTable id="tabela" value="#{projetoBean.listaProjetos}"
+							var="projeto" rowClasses="odd, even" paginator="true"
+							paginatorPosition="bottom" rows="5"
+							emptyMessage="#{text['table.empty']}"
+							rowsPerPageTemplate="10,20,30,50,100">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Nome" />
+								</f:facet>
+								<h:outputText value="#{projeto.nome}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Meta" />
+								</f:facet>
+								<h:outputText value="#{projeto.meta}">
+									<f:convertNumber type="currency" currencyCode="BRL" />
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Saldo" />
+								</f:facet>
+								<div align="right">
+									<h:outputText value="#{projeto.saldo}">
+										<f:convertNumber type="currency" currencyCode="BRL" />
+									</h:outputText>
+								</div>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Situação (%)" />
+								</f:facet>
+								<div align="center">
+									<h:outputText value="#{projeto.situacao}">
+										<f:convertNumber maxFractionDigits="2" />
+									</h:outputText>
+								</div>
+
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Início" />
+								</f:facet>
+								<h:outputText value="#{projeto.dataInicio}">
+									<f:convertDateTime locale="pt_BR" pattern="MM/yyyy" />
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Fim" />
+								</f:facet>
+								<h:outputText value="#{projeto.dataFim}">
+									<f:convertDateTime locale="pt_BR" pattern="MM/yyyy" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="Ações">
+								<div style="margin-left: 10px; float: left;">
+									<h:commandButton value="#{text['label.editar']}"
+										action="#{projetoBean.prepareUpdate(projeto)}"
+										styleClass="botao-default">
+										<f:ajax render="@form" />
+									</h:commandButton>
+								</div>
+							</p:column>
+
+							<f:facet name="footer">							 
+		            			Total #{projetoBean.listaProjetos.size()} Registro(s)  
+        					</f:facet>
+
+						</p:dataTable>
+
+					</t:div>
+
+					<t:div id="blocoDeEdicao" rendered="#{not projetoBean.pesquisando}">
+
+						<p:focus for="nome" />
+						<div style="margin-left: 10px; float: left;">
+							<h:outputLabel value="Nome" for="nome" />
+							<p:inputText value="#{projetoBean.projeto.nome}" required="true"
+								requiredMessage="Informe o nome do projeto" id="nome" size="45"
+								onkeydown="this.value = this.value.toUpperCase()"
+								onkeyup="this.value = this.value.toUpperCase()" />
+						</div>
+
+						<div style="margin-left: 10px; float: left;">
+							<h:outputLabel value="Meta" for="meta" />
+
+							<p:inputText value="#{projetoBean.projeto.meta}" required="true"
+								requiredMessage="Informe o valor da meta" id="meta" 
+								onkeydown="this.value = this.value.toUpperCase()"
+								onkeyup="this.value = this.value.toUpperCase()"
+								converter="doubleConverter" onfocus="campoMoeda()" styleClass="moeda"/>
+						</div>
+
+						<div style="margin-left: 10px; float: left;">
+							<h:outputLabel value="Início" for="inicio" />
+							<p:inputMask value="#{projetoBean.projeto.dataInicio}"
+								mask="99/9999" required="true"
+								requiredMessage="Informe o início do projeto" id="inicio">
+								<f:convertDateTime locale="pt_BR" pattern="MM/yyyy" />
+							</p:inputMask>
+						</div>
+
+						<div style="margin-left: 10px; float: left;">
+							<h:outputLabel value="Fim" for="fim" />
+							<p:inputMask value="#{projetoBean.projeto.dataFim}"
+								mask="99/99/9999" required="true"
+								requiredMessage="Informe o fim do projeto" id="fim">
+								<f:convertDateTime locale="pt_BR" pattern="dd/MM/yyyy" />
+							</p:inputMask>
+						</div>
+
+						<div class="clear"></div>
+						<div align="left" style="margin-left: 10px; margin-top: 20px;">
+
+							<div style="float: left;">
+								<h:commandButton value="#{text['label.salvar']}"
+									action="#{projetoBean.insert}"
+									rendered="#{projetoBean.adicionando}"
+									styleClass="botao-default">
+									<f:ajax execute="@form" render="@form :mensagens" />
+								</h:commandButton>
+							</div>
+							<div style="float: left;">
+								<h:commandButton value="#{text['label.atualizar']}"
+									action="#{projetoBean.update}"
+									rendered="#{projetoBean.editando}" styleClass="botao-default">
+									<f:ajax execute="@form" render="@form :mensagens" />
+								</h:commandButton>
+							</div>
+							<div style="margin-left: 10px; float: left;">
+								<h:commandButton value="#{text['label.voltar']}"
+									action="#{projetoBean.voltar}" styleClass="botao-default"
+									immediate="true">
+									<f:ajax execute="@form" render="@form :mensagens" />
+								</h:commandButton>
+							</div>
+							<div class="clear" />
+						</div>
+					</t:div>
+
+				</p:panel>
+
+			</h:form>
+		</ui:define>
+
+	</ui:composition>
+
+</h:body>
+</html>

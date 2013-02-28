@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/template/template_site.xhtml">
+
+	<ui:define name="conteudo">
+
+		<p />
+
+		<br />
+		<br />
+		<h:form id="form" prependId="false">
+			<p:outputPanel id="outputPanelMail">
+				<p:panel header="Deixe seu elogio/dúvida/sugestão"
+					style="width: 550px">
+					<p:messages />
+					<p:focus for="nome" />
+					<h:panelGrid columns="2">
+						<h:outputText value="Nome: " />
+						<p:inputText value="#{mailController.mensagem.nome}" id="nome"
+							size="63" required="true" requiredMessage="Nome é obrigatório" />
+						<h:outputText value="Email: " />
+						<p:inputText value="#{mailController.mensagem.nome}" id="email"
+							size="63" required="true" requiredMessage="Email é obrigatório" />
+						<h:outputText value="Assunto: " />
+						<p:inputText value="#{mailController.mensagem.assunto}"
+							id="assunto" size="63" required="true"
+							requiredMessage="Informe um assunto" />
+						<h:outputText value="Mensagem: " />
+						<p:inputTextarea value="#{mailController.mensagem.mensagem}"
+							id="msg" cols="63" rows="10" required="true"
+							requiredMessage="Qual o conteúdo da mensagem?" />
+					</h:panelGrid>
+					<div style="margin-left: 65px;">
+						<p:commandButton value="Enviar" icon="ui-icon-mail-closed"
+							action="#{mailController.enviaEmail}" update="outputPanelMail" />
+					</div>
+					<!-- 
+					<p:commandButton value="Limpar campos" icon="ui-icon-circle-close"
+						action="#{mailController.limpaCampos}" update="assunto msg" />
+						-->
+				</p:panel>
+			</p:outputPanel>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+
+</html>
+
+

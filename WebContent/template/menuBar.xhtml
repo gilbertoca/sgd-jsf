@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:t="http://myfaces.apache.org/tomahawk">
+
+<style>
+.ui-widget-content {
+    background: none repeat scroll 0 0 #F2F5F7;
+    /*border: 0px solid #BED6F8;*/
+    color: #000000;
+}
+</style>
+
+	<h:form>
+		<p:menubar>
+			<p:menuitem value="Início" icon="ui-icon-home"
+				url="/pages/sistema/index.xhtml" />
+
+			<p:menuitem value="Ver minhas doações" icon="ui-icon-search" url="/pages/restrito/minhas_doacoes.xhtml"/>
+			<p:submenu label="Lançamentos" icon="ui-icon-contact"
+				rendered="#{not usuarioWeb.usuarioLimitado}">
+				<p:menuitem value="Registrar Doação"
+					url="/pages/sistema/doacao/doacao.xhtml" icon="ui-icon-document" />
+			</p:submenu>
+
+			<p:submenu label="Cadastros" icon="ui-icon-contact"
+				rendered="#{not usuarioWeb.usuarioLimitado}">
+				<p:submenu label="Igreja" icon="ui-icon-contact">
+					<p:menuitem value="Cadastrar Igreja"
+						url="/pages/sistema/igreja/igreja.xhtml" icon="ui-icon-home" />
+					<p:menuitem value="Cadastrar Congregação"
+						url="/pages/sistema/igreja/congregacao.xhtml" icon="ui-icon-home" />
+				</p:submenu>
+				<p:menuitem value="Projeto" url="/pages/sistema/projeto/projeto.xhtml"
+					icon="ui-icon-contact" />
+				<p:menuitem value="Campanha" url="/pages/sistema/campanha/campanha.xhtml"
+					icon="ui-icon-contact" />
+				<p:menuitem value="Semeador" url="/pages/sistema/semeador/semeador.xhtml"
+					icon="ui-icon-person" />
+				<p:menuitem value="Galeria" url="/pages/sistema/galeria/galeria.xhtml"
+					icon="ui-icon-video" />
+			</p:submenu>
+
+			<p:submenu label="Relatórios" icon="ui-icon-folder-open"
+				rendered="#{not usuarioWeb.usuarioLimitado}">
+				<p:menuitem value="Lançamento Básico"
+					url="/pages/sistema/relatorio/doacao/lancamento.xhtml"
+					icon="ui-icon-document" />
+				<p:menuitem value="Estatística"
+					url="/pages/sistema/relatorio/participacao/estatistica.xhtml"
+					icon="ui-icon-document" />
+			</p:submenu>
+
+			<p:submenu label="Segurança" icon="ui-icon-locked"
+				rendered="#{not usuarioWeb.usuarioLimitado}">
+				<p:submenu label="Controle de Acesso" icon="ui-icon-key">
+					<p:menuitem value="Cadastrar Perfil"
+						url="/pages/sistema/perfil/perfil.xhtml" icon="ui-icon-contact" />
+					<p:menuitem value="Cadastrar Usuário"
+						url="/pages/sistema/usuario/usuario.xhtml" icon="ui-icon-person" />
+					<p:menuitem value="Alterar Perfil de Usuário"
+						url="/pages/sistema/usuario/perfil.xhtml" icon="ui-icon-person" />
+				</p:submenu>
+			</p:submenu>
+
+			<p:menuitem value="#{text['label.logout']}"
+				action="#{loginBean.logout}" icon="ui-icon-power"
+				rendered="#{usuarioWeb.logado}" />
+		</p:menubar>
+	</h:form>
+
+
+</ui:composition>

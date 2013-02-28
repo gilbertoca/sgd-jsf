@@ -1,0 +1,330 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+</h:head>
+<h:body>
+
+	<ui:composition template="/template/template_padrao.xhtml">
+		<ui:define name="conteudo">
+
+			<script>				
+			function campoMoeda() {
+				$(".moeda").priceFormat({
+					prefix : '',
+					thousandsSeparator : '.',
+					centsSeparator : ','
+				});
+			}			
+			</script>
+
+			<p />
+
+			<p:outputPanel autoUpdate="true">
+				<h:panelGroup id="mensagens" layout="block">
+					<p:messages id="messages" showDetail="false" autoUpdate="true" />
+				</h:panelGroup>
+			</p:outputPanel>
+
+			<p:ajaxStatus
+				style="width:64px;height:64px;position:fixed;right:5px;bottom:25px">
+				<f:facet name="start">
+					<p:graphicImage value="/resources/images/loading.gif" />
+				</f:facet>
+
+				<f:facet name="complete">
+					<h:outputText value="" />
+				</f:facet>
+			</p:ajaxStatus>
+			
+			<f:metadata>
+	        	<f:viewParam name="id" value="#{doacaoBean.id}" />	   
+	        	<f:event type="preRenderView" listener="#{doacaoBean.init}" />     
+	    	</f:metadata>
+
+			<h:form binding="#{doacaoBean.form}" id="form" prependId="false">
+
+				<t:saveState value="#{doacaoBean.doacao}" />
+				<t:saveState value="#{doacaoBean.doacoes}" />
+				<t:saveState value="#{doacaoBean.state}" />
+
+				<p />
+
+				<!-- 
+					<t:div id="blocoDeEdicao" rendered="true">
+					-->
+				<p:panel header="Registro de Doação">
+
+					<div align="right"
+						style="margin-bottom: 10px; margin-left: 10px; float: right;">
+						<h:commandButton value="#{text['label.adicionar']}" rendered="#{not doacaoBean.adicionando}"
+							action="#{doacaoBean.prepareInsert}" styleClass="botao-default">
+							<f:ajax render="@form" />
+						</h:commandButton>
+					</div>
+					<div align="right"
+						style="margin-bottom: 10px; margin-left: 10px; float: right;">
+						<h:commandButton value="#{text['label.listar']}" rendered="#{not doacaoBean.pesquisando}"
+							action="#{doacaoBean.lista}" styleClass="botao-default">
+							<f:ajax render="@form" />
+						</h:commandButton>
+					</div>
+
+					<t:div id="blocoDeEdicao" rendered="#{not doacaoBean.pesquisando}">
+						<div style="width: 50%">
+							<p:panel id="edicao" header="Adicionar">
+								<p:focus for="periodo" />
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Referência" for="periodo" />
+									<p:inputMask value="#{doacaoBean.doacao.periodoReferencia}"
+										mask="99/9999" required="true"
+										requiredMessage="Informe o período de referência" id="periodo">
+										<f:convertDateTime locale="pt_BR" pattern="MM/yyyy" />
+									</p:inputMask>
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Valor" for="valor" />
+									<p:inputText value="#{doacaoBean.doacao.valor}" required="true"
+										requiredMessage="Informe o valor da doação" id="valor"
+										converter="doubleConverter" onfocus="campoMoeda()"
+										styleClass="moeda" />
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Campanha" for="comboCampanha" />
+									<p:selectOneMenu id="comboCampanha" required="true"
+										requiredMessage="Informe a campanha"
+										value="#{doacaoBean.doacao.campanha}">
+
+										<f:selectItems value="#{campanhaDao.listaCampanhas}"
+											var="campanha" itemLabel="#{campanha.nome}"
+											itemValue="#{campanha}" />
+									</p:selectOneMenu>
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Forma Doação" for="forma" />
+									<p:selectOneMenu value="#{doacaoBean.doacao.formaDoacao}"
+										id="forma">
+										<f:selectItems value="#{doacaoBean.formaDoacaoValues}" />
+									</p:selectOneMenu>
+								</div>
+
+								<div class="clear" />
+
+								<t:div style="margin-left: 10px; float: left;" id="div">
+									<h:outputLabel value="DOAÇÃO DO SEMEADOR" id="labelS" />
+									<p:autoComplete value="#{doacaoBean.semeador}" id="nome"
+										var="s" itemLabel="#{s.nome}" itemValue="#{s}"
+										forceSelection="true" size="46"
+										completeMethod="#{doacaoBean.buscaSemeadorPorNome}"
+										minQueryLength="3" scrollHeight="200"
+										onkeydown="this.value = this.value.toUpperCase()"
+										onkeyup="this.value = this.value.toUpperCase()">
+
+										<p:column>  
+				                    #{s.nome}  
+                				</p:column>
+
+										<p:column>  
+				                   	#{s.congregacao.toString()}  
+                				</p:column>
+										<p:ajax event="itemSelect"
+											listener="#{doacaoBean.handleSelectSemeador}"
+											update=":form:desc" />
+									</p:autoComplete>
+								</t:div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="" style="visibility:hidden" />
+									<h:outputLabel style="font-weight:bold"
+										value="#{doacaoBean.semeador.codigo} - #{doacaoBean.semeador.congregacao.nome}"
+										id="desc" />
+								</div>
+
+								<div class="clear" />
+
+								<t:div style="margin-left: 10px; float: left;" id="divC">
+									<h:outputLabel value="DOAÇÃO DA CONGREGAÇÃO" id="labelC" />
+									<p:autoComplete value="#{doacaoBean.congregacao}"
+										id="congregacao" var="c" itemLabel="#{c.nome}"
+										itemValue="#{c}" forceSelection="true" size="46"
+										completeMethod="#{doacaoBean.buscaCongregacaoPorNome}"
+										minQueryLength="3" scrollHeight="200"
+										onkeydown="this.value = this.value.toUpperCase()"
+										onkeyup="this.value = this.value.toUpperCase()">
+
+										<p:column>  
+			                    	#{c.nome}  
+               					</p:column>
+
+										<p:column>  
+				                    	#{c.tipoCongregacao.value}  
+                					</p:column>
+
+										<p:ajax event="itemSelect"
+											listener="#{doacaoBean.handleSelectCongregacao}" />
+									</p:autoComplete>
+
+								</t:div>
+
+								<div class="clear"></div>
+
+								<div align="left" style="margin-left: 10px; margin-top: 20px;">
+
+									<div style="float: left;">
+										<h:commandButton value="#{text['label.salvar']}"
+											action="#{doacaoBean.insert}"
+											rendered="#{doacaoBean.adicionando}"
+											styleClass="botao-default"
+											onclick="return confirm('Confirma o lançamento?');">
+											<f:ajax execute="@form" render="@form :mensagens" />
+										</h:commandButton>
+									</div>
+									<div style="float: left;">
+										<h:commandButton value="#{text['label.atualizar']}"
+											action="#{doacaoBean.update}"
+											rendered="#{doacaoBean.editando}" styleClass="botao-default">
+											<f:ajax execute="@form" render="@form :mensagens" />
+										</h:commandButton>
+									</div>
+									<!-- 
+							-->
+									<div style="margin-left: 10px; float: left;">
+										<h:commandButton value="#{text['label.voltar']}"
+											action="#{doacaoBean.voltar}" styleClass="botao-default"
+											immediate="true">
+											<f:ajax execute="@form" render="@form :mensagens" />
+										</h:commandButton>
+									</div>
+									<div class="clear" />
+								</div>
+								<div class="clear" />
+							</p:panel>
+						</div>
+						<div class="clear" />
+					</t:div>
+
+					<div class="clear" />
+
+					<!-- 
+					<t:div id="blocoDePesquisa" rendered="true">
+						<div align="right"
+							style="margin-bottom: 10px; margin-left: 10px; float: right;">
+							<h:commandButton value="#{text['label.adicionar']}"
+								action="#{doacaoBean.prepareInsert}" styleClass="botao-default">
+								<f:ajax render="@form" />
+							</h:commandButton>
+						</div>
+						<div align="right"
+							style="margin-bottom: 10px; margin-left: 10px; float: right;">
+							<h:commandButton value="#{text['label.listar']}"
+								action="#{doacaoBean.lista}" styleClass="botao-default">
+								<f:ajax render="@form" />
+							</h:commandButton>
+						</div>
+					-->
+					<t:div id="blocoDePesquisa" rendered="#{doacaoBean.pesquisando}">
+						<!-- 	
+						-->
+						<br />
+						<br />
+						<p />
+						<p:dataTable id="tabela" value="#{doacaoBean.doacoes}"
+							var="doacao" rowClasses="odd, even" paginator="true"
+							paginatorPosition="bottom" rows="10"
+							emptyMessage="#{text['table.empty']}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10,20,30,50,100"
+							currentPageReportTemplate="Página {currentPage} de {totalPages}"
+							sortOrder="ascending" widgetVar="dTable" filterEvent="enter">
+
+							<p:column filterBy="#{doacao.valor}" filterMatchMode="startsWith"
+								footerText="Valor">
+								<f:facet name="header">
+									<h:outputText value="Valor" />
+								</f:facet>
+
+								<h:outputText value="#{doacao.valor}">
+									<f:convertNumber type="currency" currencyCode="BRL" />
+								</h:outputText>
+							</p:column>
+
+							<p:column filterBy="#{doacao.dataLancamento}"
+								filterMatchMode="startsWith" footerText="Formato: Ano-Mês-Dia">
+								<f:facet name="header">
+									<h:outputText value="Data Lançamento" />
+								</f:facet>
+								<h:outputText value="#{doacao.dataLancamento}">
+									<f:convertDateTime pattern="dd/MM/yyyy" />
+								</h:outputText>
+							</p:column>
+
+							<p:column filterBy="#{doacao.semeador}"
+								filterMatchMode="contains" footerText="Nome">
+								<f:facet name="header">
+									<h:outputText value="Semeador" />
+								</f:facet>
+								<h:outputText value="#{doacao.semeador.nome}" />
+							</p:column>
+
+							<p:column footerText="Nome" filterBy="#{doacao.congregacao}"
+								filterMatchMode="startsWith">
+								<f:facet name="header">
+									<h:outputText value="Congregação" />
+								</f:facet>
+								<h:outputText value="#{doacao.congregacao.nome}" />
+							</p:column>
+
+							<p:column filterBy="#{doacao.formaDoacao.value}"
+								filterMatchMode="startsWith" footerText="Forma da Doação">
+								<f:facet name="header">
+									<h:outputText value="Forma da Doação" />
+								</f:facet>
+								<h:outputText value="#{doacao.formaDoacao.value}" />
+							</p:column>
+
+							<p:column filterBy="#{doacao.campanha.nome}"
+								footerText="Nome da Campanha">
+								<f:facet name="header">
+									<h:outputText value="Campanha" />
+								</f:facet>
+								<h:outputText value="#{doacao.campanha.nome}" />
+							</p:column>
+
+							<p:column headerText="Ações"
+								rendered="#{usuarioWeb.usuarioAdmin}">
+								<div style="margin-left: 10px; float: left;">
+									<p:tooltip for="edit" value="Alterar Congregação" />
+									<p:commandButton id="edit" icon="ui-icon-pencil"
+										action="doacao.xhtml?faces-redirect=true&amp;includeViewParams=true">
+										<f:setPropertyActionListener value="#{doacao.id}"
+											target="#{doacaoBean.id}" />
+									</p:commandButton>
+								</div>
+							</p:column>
+
+							<f:facet name="footer">							 
+		            			Total #{doacaoBean.doacoes.size()} Registro(s)  
+        					</f:facet>
+
+						</p:dataTable>
+
+					</t:div>
+
+
+
+				</p:panel>
+
+			</h:form>
+		</ui:define>
+
+	</ui:composition>
+
+</h:body>
+</html>

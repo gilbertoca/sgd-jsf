@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:t="http://myfaces.apache.org/tomahawk">
+
+	<style>
+.ui-widget-content {
+	background: none repeat scroll 0 0 #F2F5F7;
+	/*border: 1px solid #BED6F8;*/
+	color: #000000;
+}
+</style>
+
+	<h:form>
+		<p:menubar>
+
+			<p:menuitem value="Início" icon="ui-icon-home"
+				url="/pages/home.xhtml" />
+			<p:menuitem value="Sobre as Campanhas" icon="ui-icon-help"
+				url="/pages/content/sobre.xhtml" />
+			<p:menuitem value="Seja um Semeador" icon="ui-icon-check"
+				url="/pages/content/sejaum.xhtml" />
+			<c:if test="#{not usuarioWeb.logado}">
+				<p:menuitem value="Ver minhas doações" icon="ui-icon-search" />
+			</c:if>
+			<c:if test="#{usuarioWeb.logado}">
+				<p:menuitem value="Ver minhas doações" icon="ui-icon-search"
+					url="/pages/restrito/minhas_doacoes.xhtml" />
+			</c:if>
+			<p:menuitem value="Contato" icon="ui-icon-mail-closed"
+				url="/pages/content/contato.xhtml" />
+			<p:menuitem value="#{text['label.logout']}"
+				action="#{loginBean.logout}" icon="ui-icon-power"
+				rendered="#{usuarioWeb.logado}" />
+
+		</p:menubar>
+	</h:form>
+
+
+</ui:composition>

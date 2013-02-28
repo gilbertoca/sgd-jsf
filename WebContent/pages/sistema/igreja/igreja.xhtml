@@ -1,0 +1,126 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+</h:head>
+<h:body>
+
+	<ui:composition template="/template/template_padrao.xhtml">
+		<ui:define name="conteudo">
+			
+			<p />
+
+			<p:outputPanel autoUpdate="true">
+				<h:panelGroup id="mensagens" layout="block">
+					<p:messages id="messages" showDetail="false" autoUpdate="true" />
+				</h:panelGroup>
+			</p:outputPanel>
+			<h:form binding="#{igrejaBean.form}" id="form" prependId="false">
+
+				<t:saveState value="#{igrejaBean.igreja}" />
+				<t:saveState value="#{igrejaBean.igrejas}" />
+				<t:saveState value="#{igrejaBean.state}" />
+
+				<p />
+				<p:panel header="Cadastro de Igrejas">
+
+					<t:div id="blocoDePesquisa" rendered="#{igrejaBean.pesquisando}">
+						<div align="right" style="margin-bottom: 10px;">
+							<h:commandButton value="#{text['label.adicionar']}"
+								action="#{igrejaBean.prepareInsert}" styleClass="botao-default">
+								<f:ajax render="@form" />
+							</h:commandButton>							
+						</div>
+						<p />
+						<p:dataTable id="tabela" value="#{igrejaBean.listaIgrejas}"
+							var="igreja" rowClasses="odd, even" paginator="true"
+							paginatorPosition="bottom" rows="5"
+							emptyMessage="#{text['table.empty']}"
+							rowsPerPageTemplate="10,20,30,50,100">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Nome" />
+								</f:facet>
+								<h:outputText value="#{igreja.nome}" />
+							</p:column>
+
+							<p:column headerText="Ações">
+								<div style="margin-left: 10px; float: left;">
+									<h:commandButton value="#{text['label.editar']}"
+										action="#{igrejaBean.prepareUpdate(igreja)}"
+										styleClass="botao-default">
+										<f:ajax render="@form" />
+									</h:commandButton>
+								</div>
+								<div style="margin-left: 10px; float: left;">
+									<h:commandButton value="#{text['label.remover']}"
+										action="#{igrejaBean.remove}"
+										onclick="return confirm('Deseja realmente remover esta igreja?');"
+										styleClass="botao-default">
+										<f:ajax render="@form :mensagens" />
+										<f:setPropertyActionListener target="#{igrejaBean.igreja}"
+											value="#{igreja}" />
+									</h:commandButton>
+								</div>
+							</p:column>
+
+							<f:facet name="footer">							 
+		            			Total #{igrejaBean.listaIgrejas.size()} Registro(s)  
+        					</f:facet>
+
+						</p:dataTable>
+
+					</t:div>
+
+					<t:div id="blocoDeEdicao" rendered="#{not igrejaBean.pesquisando}">
+
+						<p:focus for="nome"/>						
+						<div style="margin-left: 10px; float: left;">
+							<h:outputLabel value="Nome" for="nome" />
+							<p:inputText value="#{igrejaBean.igreja.nome}" required="true"
+								requiredMessage="Informe o nome da igreja" id="nome" size="45"
+								onkeydown="this.value = this.value.toUpperCase()"
+								onkeyup="this.value = this.value.toUpperCase()" />
+						</div>
+
+						<div class="clear"></div>
+						<div align="left" style="margin-left: 10px; margin-top: 20px;">
+
+							<div style="float: left;">
+								<h:commandButton value="#{text['label.salvar']}"
+									action="#{igrejaBean.insert}"
+									rendered="#{igrejaBean.adicionando}" styleClass="botao-default">
+									<f:ajax execute="@form" render="@form :mensagens" />
+								</h:commandButton>
+							</div>
+							<div style="float: left;">
+								<h:commandButton value="#{text['label.atualizar']}"
+									action="#{igrejaBean.update}" rendered="#{igrejaBean.editando}"
+									styleClass="botao-default">
+									<f:ajax execute="@form" render="@form :mensagens" />
+								</h:commandButton>
+							</div>
+							<div style="margin-left: 10px; float: left;">
+								<h:commandButton value="#{text['label.voltar']}"
+									action="#{igrejaBean.voltar}" styleClass="botao-default" immediate="true">
+									<f:ajax execute="@form" render="@form :mensagens" />
+								</h:commandButton>
+							</div>
+							<div class="clear"/>
+						</div>
+					</t:div>
+
+				</p:panel>
+
+			</h:form>
+		</ui:define>
+
+	</ui:composition>
+
+</h:body>
+</html>

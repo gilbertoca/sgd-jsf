@@ -1,0 +1,34 @@
+28/08/12 08:34 [INFO] [main] (Version) - Hibernate Commons Annotations 3.2.0.Final
+28/08/12 08:34 [INFO] [main] (Environment) - Hibernate 3.6.9.Final
+28/08/12 08:34 [INFO] [main] (Environment) - hibernate.properties not found
+28/08/12 08:34 [INFO] [main] (Environment) - Bytecode provider name : javassist
+28/08/12 08:34 [INFO] [main] (Environment) - using JDK 1.4 java.sql.Timestamp handling
+28/08/12 08:34 [INFO] [main] (Version) - Hibernate EntityManager 3.6.9.Final
+28/08/12 08:34 [INFO] [main] (AnnotationBinder) - Binding entity from annotated class: br.com.adbv.sgd.model.Congregacao
+28/08/12 08:34 [INFO] [main] (SettingsFactory) - Cache region factory : org.hibernate.cache.impl.NoCachingRegionFactory
+28/08/12 08:34 [INFO] [main] (EntityBinder) - Bind entity br.com.adbv.sgd.model.Congregacao on table Congregacao
+28/08/12 08:34 [INFO] [main] (AnnotationBinder) - Binding entity from annotated class: br.com.adbv.sgd.model.Role
+28/08/12 08:34 [INFO] [main] (EntityBinder) - Bind entity br.com.adbv.sgd.model.Role on table Role
+28/08/12 08:34 [INFO] [main] (AnnotationBinder) - Binding entity from annotated class: br.com.adbv.sgd.model.Igreja
+28/08/12 08:34 [INFO] [main] (EntityBinder) - Bind entity br.com.adbv.sgd.model.Igreja on table Igreja
+28/08/12 08:34 [INFO] [main] (AnnotationBinder) - Binding entity from annotated class: br.com.adbv.sgd.model.Doacao
+28/08/12 08:34 [INFO] [main] (EntityBinder) - Bind entity br.com.adbv.sgd.model.Doacao on table Doacao
+28/08/12 08:34 [INFO] [main] (AnnotationBinder) - Binding entity from annotated class: br.com.adbv.sgd.model.Galeria
+28/08/12 08:34 [INFO] [main] (EntityBinder) - Bind entity br.com.adbv.sgd.model.Galeria on table Galeria
+28/08/12 08:34 [INFO] [main] (AnnotationBinder) - Binding entity from annotated class: br.com.adbv.sgd.model.Endereco
+28/08/12 08:34 [INFO] [main] (EntityBinder) - Bind entity br.com.adbv.sgd.model.Endereco on table endereco
+28/08/12 08:34 [INFO] [main] (AnnotationBinder) - Binding entity from annotated class: br.com.adbv.sgd.model.Campanha
+28/08/12 08:34 [INFO] [main] (EntityBinder) - Bind entity br.com.adbv.sgd.model.Campanha on table Campanha
+28/08/12 08:34 [INFO] [main] (AnnotationBinder) - Binding entity from annotated class: br.com.adbv.sgd.model.MetaCampanha
+28/08/12 08:34 [INFO] [main] (EntityBinder) - Bind entity br.com.adbv.sgd.model.MetaCampanha on table MetaCampanha
+28/08/12 08:34 [INFO] [main] (AnnotationBinder) - Binding entity from annotated class: br.com.adbv.sgd.model.Usuario
+28/08/12 08:34 [INFO] [main] (QueryBinder) - Binding Named query: Usuario.findByUsername => SELECT u FROM Usuario u WHERE u.username=:username and u.enabled=true
+28/08/12 08:34 [INFO] [main] (EntityBinder) - Bind entity br.com.adbv.sgd.model.Usuario on table Usuario
+28/08/12 08:34 [INFO] [main] (AnnotationBinder) - Binding entity from annotated class: br.com.adbv.sgd.model.Semeador
+28/08/12 08:34 [INFO] [main] (EntityBinder) - Bind entity br.com.adbv.sgd.model.Semeador on table Semeador
+28/08/12 08:34 [INFO] [main] (AnnotationBinder) - Binding entity from annotated class: br.com.adbv.sgd.model.Projeto
+28/08/12 08:34 [INFO] [main] (EntityBinder) - Bind entity br.com.adbv.sgd.model.Projeto on table Projeto
+28/08/12 08:34 [INFO] [main] (Configuration) - Hibernate Validator not found: ignoring
+28/08/12 08:34 [INFO] [main] (Version) - HV000001: Hibernate Validator 4.3.0.Final
+28/08/12 08:34 [INFO] [main] (HibernateSearchEventListenerRegister) - Unable to find org.hibernate.search.event.FullTextIndexEventListener on the classpath. Hibernate Search is not enabled.
+28/08/12 08:34 [WARN] [main] (UserSuppliedConnectionProvider) - No connection properties specified - the user must supply JDBC connections

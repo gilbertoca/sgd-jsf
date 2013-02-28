@@ -1,0 +1,176 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+</h:head>
+<h:body>
+
+	<ui:composition template="/template/template_padrao.xhtml">
+		<ui:define name="conteudo">
+
+			<p />
+
+			<p:outputPanel autoUpdate="true">
+				<h:panelGroup id="mensagens" layout="block">
+					<p:messages id="messages" showDetail="false" autoUpdate="true" />
+				</h:panelGroup>
+			</p:outputPanel>
+			
+			<f:metadata>
+	        	<f:viewParam name="id" value="#{congregacaoBean.id}" />	   
+	        	<f:event type="preRenderView" listener="#{congregacaoBean.init}" />     
+	    	</f:metadata>
+			<h:form binding="#{congregacaoBean.form}" id="form" prependId="false">
+
+				<t:saveState value="#{congregacaoBean.congregacao}" />
+				<t:saveState value="#{congregacaoBean.congregacoes}" />
+				<t:saveState value="#{congregacaoBean.state}" />
+
+				<p />
+				<p:panel header="Cadastro de Congregações">
+
+					<t:div id="blocoDePesquisa"
+						rendered="#{congregacaoBean.pesquisando}">
+						<div align="right" style="margin-bottom: 10px;">
+							<h:commandButton value="#{text['label.adicionar']}"
+								action="#{congregacaoBean.prepareInsert}"
+								styleClass="botao-default">
+								<f:ajax render="@form" />
+							</h:commandButton>						
+						</div>
+						<p />
+						<p:dataTable id="tabela"
+							value="#{congregacaoBean.listaCongregacoes}" var="congregacao"
+							rowClasses="odd, even" paginator="true"
+							paginatorPosition="bottom" rows="10"
+							emptyMessage="#{text['table.empty']}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10,20,30,50,100"
+							currentPageReportTemplate="Página {currentPage} de {totalPages}"
+							filterEvent="enter">
+
+							<p:column filterMatchMode="startsWith" filterBy="#{congregacao.nome}">
+								<f:facet name="header">
+									<h:outputText value="Nome" />
+								</f:facet>
+								<h:outputText value="#{congregacao.nome}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Tipo" />
+								</f:facet>
+								<h:outputText value="#{congregacao.tipoCongregacao.value}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Igreja" />
+								</f:facet>
+								<h:outputText value="#{congregacao.igreja.nome}" />
+							</p:column>
+
+							<p:column headerText="Ações">
+								<div style="margin-left: 10px; float: left;">
+									<p:tooltip for="edit" value="Alterar Congregação" />
+									<p:commandButton id="edit" icon="ui-icon-pencil"
+										action="congregacao.xhtml?faces-redirect=true&amp;includeViewParams=true">
+										<f:setPropertyActionListener value="#{congregacao.id}"
+											target="#{congregacaoBean.id}" />
+									</p:commandButton>
+								</div>
+								<div style="margin-left: 10px; float: left;">
+									<h:commandButton value="#{text['label.remover']}"
+										action="#{congregacaoBean.remove}"
+										onclick="return confirm('Deseja realmente remover esta congregação?');"
+										styleClass="botao-default">
+										<f:ajax render="@form :mensagens" />
+										<f:setPropertyActionListener
+											target="#{congregacaoBean.congregacao}" value="#{congregacao}" />
+									</h:commandButton>
+								</div>
+							</p:column>
+
+							<f:facet name="footer">							 
+		            			Total #{congregacaoBean.listaCongregacoes.size()} Registro(s)  
+        					</f:facet>
+
+						</p:dataTable>
+
+					</t:div>
+
+					<t:div id="blocoDeEdicao"
+						rendered="#{not congregacaoBean.pesquisando}">
+
+						<p:focus for="nome" />
+						<div style="margin-left: 10px; float: left;">
+							<h:outputLabel value="Igreja" for="comboIgreja" />
+							<p:selectOneMenu id="comboIgreja" required="true"
+								requiredMessage="Informe a Igreja"
+								value="#{congregacaoBean.congregacao.igreja}">
+
+								<f:selectItems value="#{igrejaBean.listaIgrejas}" var="igreja"
+									itemLabel="#{igreja.nome}" itemValue="#{igreja}" />
+							</p:selectOneMenu>
+						</div>
+						
+						<div style="margin-left: 10px; float: left;">
+							<h:outputLabel value="Nome" for="nome" />
+							<p:inputText value="#{congregacaoBean.congregacao.nome}"
+								required="true" requiredMessage="Informe o nome da congregacao"
+								id="nome" size="45"
+								onkeydown="this.value = this.value.toUpperCase()"
+								onkeyup="this.value = this.value.toUpperCase()" />
+						</div>
+						
+						<div style="margin-left: 10px; float: left;">
+								<h:outputLabel value="Tipo" for="tipo" />
+								<p:selectOneMenu
+									value="#{congregacaoBean.congregacao.tipoCongregacao}"
+									id="tipo">
+									<f:selectItems value="#{congregacaoBean.tipoCongregacaoValues}" />
+								</p:selectOneMenu>
+							</div>
+
+						<div class="clear"></div>
+						<div align="left" style="margin-left: 10px; margin-top: 20px;">
+
+							<div style="float: left;">
+								<h:commandButton value="#{text['label.salvar']}"
+									action="#{congregacaoBean.insert}"
+									rendered="#{congregacaoBean.adicionando}"
+									styleClass="botao-default">
+									<f:ajax execute="@form" render="@form :mensagens" />
+								</h:commandButton>
+							</div>
+							<div style="float: left;">
+								<h:commandButton value="#{text['label.atualizar']}"
+									action="#{congregacaoBean.update}"
+									rendered="#{congregacaoBean.editando}"
+									styleClass="botao-default">
+									<f:ajax execute="@form" render="@form :mensagens" />
+								</h:commandButton>
+							</div>
+							<div style="margin-left: 10px; float: left;">
+								<h:commandButton value="#{text['label.voltar']}"
+									action="#{congregacaoBean.voltar}" styleClass="botao-default"
+									immediate="true">
+									<f:ajax execute="@form" render="@form :mensagens" />
+								</h:commandButton>
+							</div>
+							<div class="clear" />
+						</div>
+					</t:div>
+
+				</p:panel>
+
+			</h:form>
+		</ui:define>
+
+	</ui:composition>
+
+</h:body>
+</html>

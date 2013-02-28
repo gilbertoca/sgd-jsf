@@ -1,0 +1,603 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<h:head>
+</h:head>
+<h:body>
+
+	<ui:composition template="/template/template_padrao.xhtml">
+		<ui:define name="conteudo">
+
+			<script>
+				$(document).ready(function(){
+					showHideCombo();
+				});
+			
+				function managerFocus() {
+					if ($('#cep').val() != "") {
+						if ($('#logradouro').val() == "") {
+							$('#logradouro').focus();
+						} else {
+							if ($('#numero').val() == "") {
+								$('#numero').focus();
+							}
+						}
+					}
+				}
+
+				function numeric() {
+					$('.rg').numeric();
+				}
+				
+				function showHideCombo() {
+					if ($('#ckBox_input').is(':checked')) {
+						$('#combo').show();
+					} else {
+						$('#combo').hide();
+					}
+				}
+				
+			</script>
+
+
+
+			<p:outputPanel autoUpdate="true">
+				<h:panelGroup id="mensagens" layout="block">
+					<p:messages id="messages" showDetail="false" autoUpdate="true" />
+				</h:panelGroup>
+			</p:outputPanel>
+
+			<p:ajaxStatus onstart="statusDialog.show(); "
+				onsuccess="statusDialog.hide(); managerFocus();" />
+
+			<p:dialog modal="false" widgetVar="statusDialog"
+				header="Carregando..." draggable="false" closable="false"
+				resizable="false">
+				<p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+			</p:dialog>
+			
+			<f:metadata>
+	        	<f:viewParam name="id" value="#{semeadorBean.id}" />	   
+	        	<f:event type="preRenderView" listener="#{semeadorBean.init}" />     
+	    	</f:metadata>
+
+			<h:form binding="#{semeadorBean.form}" id="form" prependId="false">
+
+				<t:saveState value="#{semeadorBean.semeador}" /> 
+				<t:saveState value="#{semeadorBean.semeadores}" />
+				<t:saveState value="#{semeadorBean.state}" />
+
+				<p />
+				<p />
+				<p:panel header="Cadastro de Semeador">
+
+					<t:div id="blocoDePesquisa" rendered="#{semeadorBean.pesquisando}">
+						<div style="margin-bottom: 10px; float: right; margin-left: 10px;">
+							<h:commandLink>
+								<p:graphicImage value="/resources/images/excel.jpg" />
+								<p:dataExporter type="xls" target="tabela"
+									fileName="Relatório de Semeadores"
+									postProcessor="#{semeadorBean.postProcessXLS}" excludeColumns="6"/>
+							</h:commandLink>
+						</div>
+						<div style="margin-bottom: 10px; float: right;">
+							<h:commandButton value="#{text['label.adicionar']}"
+								action="#{semeadorBean.prepareInsert()}"
+								styleClass="botao-default">
+								<f:ajax render="@form" />
+							</h:commandButton>
+						</div>
+						
+						<div class="clear"/>
+											
+						<p />
+						<p:dataTable id="tabela" value="#{semeadorBean.listaSemeadores}"
+							var="semeador" rowClasses="odd, even" paginator="true"
+							paginatorPosition="bottom" rows="10"
+							emptyMessage="#{text['table.empty']}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10,20,30,50,100"
+							currentPageReportTemplate="Página {currentPage} de {totalPages}"
+							widgetVar="sTable" filterEvent="enter">							
+							
+							<p:column >
+								<f:facet name="header">
+									<h:outputText value="Registro" />
+								</f:facet>
+								<h:outputText value="#{semeador.id}" />
+							</p:column>
+
+							<p:column filterBy="#{semeador.codigo}"
+								filterMatchMode="startsWith">
+								<f:facet name="header">
+									<h:outputText value="Código" />
+								</f:facet>
+								<h:outputText value="#{semeador.codigo}" />
+							</p:column>
+
+							<p:column filterMatchMode="contains" filterBy="#{semeador.nome}">
+								<f:facet name="header">
+									<h:outputText value="Semeador" />
+								</f:facet>
+								<h:outputText value="#{semeador.nome}" />
+							</p:column>
+
+							<p:column filterMatchMode="startsWith" filterBy="#{semeador.cpf}">
+								<f:facet name="header">
+									<h:outputText value="Cpf" />
+								</f:facet>
+								<h:outputText value="#{semeador.cpf}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Telefone" />
+								</f:facet>
+								<h:outputText value="#{semeador.telefone}" />
+							</p:column>
+
+							<p:column filterBy="#{semeador.congregacao.toString()}"
+								filterMatchMode="startsWith">
+								<f:facet name="header">
+									<h:outputText value="Congregação" />
+								</f:facet>
+								<h:outputText value="#{semeador.congregacao.toString()}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Oferta Tempo?" />
+								</f:facet>
+								<h:outputText
+									value="#{semeador.ofertaTempo == 'true' ? 'SIM' : NÃO }" />
+							</p:column>
+
+							<p:column headerText="Ações" >
+
+								<div style="margin-left: 10px; float: left;">
+									<p:commandButton id="selectButton" update=":form:display "
+										oncomplete="semeadorDlg.show()" icon="ui-icon-search"
+										title="Visualização Completa">
+										<f:setPropertyActionListener value="#{semeador}"
+											target="#{semeadorBean.semeador}" />
+									</p:commandButton>																	
+
+								</div>
+								
+								<div style="margin-left: 10px; float: left;">
+									<p:tooltip for="edit" value="Alterar Lançamento" />
+									<p:commandButton id="edit" icon="ui-icon-pencil"
+										action="semeador.xhtml?faces-redirect=true&amp;includeViewParams=true">
+										<f:setPropertyActionListener value="#{semeador.id}"
+											target="#{semeadorBean.id}" />
+									</p:commandButton>
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:commandButton value="#{text['label.remover']}"
+										action="#{semeadorBean.remove}"
+										onclick="return confirm('Deseja realmente remover este semeador?');"
+										styleClass="botao-default"
+										rendered="#{usuarioWeb.usuarioAdmin}">
+										<f:ajax render="@form :mensagens" />
+										<f:setPropertyActionListener target="#{semeadorBean.semeador}"
+											value="#{semeador}" />
+									</h:commandButton>
+								</div>
+							</p:column>
+
+							<f:facet name="footer">
+								<!--
+								#{fn:length(semeadorBean.listaSemeadores)}						 
+		            			 -->  		            			 
+		            			 Total #{semeadorBean.listaSemeadores.size()} Registro(s) 
+        					</f:facet>
+
+						</p:dataTable>
+
+						<p:dialog header="Detalhes do Semeador" widgetVar="semeadorDlg"
+							resizable="false" id="semDlg" showEffect="fade"
+							hideEffect="explode" modal="true" style="color:#990000">
+
+							<t:div id="display">												
+								
+								<div class="clear"/>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Nome" style="font-weight:bold" />
+									<h:outputText value="#{semeadorBean.semeador.nome}" />
+								</div>
+
+								<t:div id="sCpf" style="margin-left: 10px; float: left;"
+									rendered="#{not semeadorBean.semeador.cpf.equals('')}">
+									<div style="margin-left: 20px; float: left;">
+										<h:outputLabel value="Cpf" style="font-weight:bold" />
+										<h:outputText value="#{semeadorBean.semeador.cpf}" />
+									</div>
+								</t:div>
+
+								<div style="margin-left: 20px; float: left;">
+									<h:outputLabel value="Código" style="font-weight:bold" />
+									<h:outputText value="#{semeadorBean.semeador.codigo}" />
+								</div>
+
+								<div class="clear" />
+								<hr />
+								<t:div id="sRg" style="margin-left: 10px; float: left;"
+									rendered="#{not semeadorBean.semeador.rg.equals('')}">
+									<div style="margin-left: 20px; float: left;">
+										<h:outputLabel value="RG" style="font-weight:bold" />
+										<h:outputText value="#{semeadorBean.semeador.rg}" />
+									</div>
+								</t:div>
+
+								<div style="margin-left: 20px; float: left;">
+									<h:outputLabel value="Data Nascimento" style="font-weight:bold" />
+									<h:outputText value="#{semeadorBean.semeador.dataNascimento}">
+										<f:convertDateTime pattern="dd/MM/yyyy" />
+									</h:outputText>
+								</div>
+
+								<div style="margin-left: 20px; float: left;">
+									<h:outputLabel value="Data Cadastro" style="font-weight:bold" />
+									<h:outputText value="#{semeadorBean.semeador.dataCadastro}">
+										<f:convertDateTime pattern="dd/MM/yyyy" />
+									</h:outputText>
+								</div>
+
+								<div class="clear" />
+								<hr />
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Logradouro" style="font-weight:bold" />
+									<h:outputText
+										value="#{semeadorBean.semeador.logradouro} #{semeadorBean.semeador.numero} " />
+								</div>
+
+								<t:div style="margin-left: 20px; float: left;"
+									rendered="#{not semeadorBean.semeador.complemento.equals('')}">
+									<h:outputLabel value="Complemento" style="font-weight:bold" />
+									<h:outputText value="#{semeadorBean.semeador.complemento}" />
+								</t:div>
+
+								<div style="margin-left: 20px; float: left;">
+									<h:outputLabel value="Bairro" style="font-weight:bold" />
+									<h:outputText value="#{semeadorBean.semeador.bairro}" />
+								</div>
+
+								<div style="margin-left: 20px; float: left;">
+									<h:outputLabel value="Cidade" style="font-weight:bold" />
+									<h:outputText value="#{semeadorBean.semeador.cidade}" />
+								</div>
+
+								<div style="margin-left: 20px; float: left;">
+									<h:outputLabel value="UF" style="font-weight:bold" />
+									<h:outputText
+										value="#{semeadorBean.semeador.estado.toUpperCase()}" />
+								</div>
+
+								<div style="margin-left: 20px; float: left;">
+									<h:outputLabel value="Cep" style="font-weight:bold" />
+									<h:outputText value="#{semeadorBean.semeador.cep}" />
+								</div>
+
+								<div class="clear" />
+								<hr />
+
+								<t:div id="foneRes" style="margin-left: 10px; float: left;"
+									rendered="#{not semeadorBean.semeador.telefone.equals('')}">
+									<h:outputLabel value="Telefone" style="font-weight:bold"
+										for="res" />
+									<h:outputText id="res"
+										value="#{semeadorBean.semeador.telefone}" />
+								</t:div>
+
+								<t:div style="margin-left: 20px; float: left;"
+									rendered="#{not semeadorBean.semeador.email.equals('')}">
+									<h:outputLabel value="Email" style="font-weight:bold" />
+									<h:outputText value="#{semeadorBean.semeador.email}" />
+								</t:div>
+
+								<t:div style="margin-left: 20px; float: left;"
+									rendered="#{not semeadorBean.semeador.profissao.equals('')}">
+									<h:outputLabel value="Profissão" style="font-weight:bold" />
+									<h:outputText value="#{semeadorBean.semeador.profissao}" />
+								</t:div>
+
+								<div class="clear" />
+								<hr />
+
+								<div style="margin-left: 20px; float: left;">
+									<h:outputLabel value="Evangélico ?" style="font-weight:bold" />
+									<h:outputText
+										value="#{semeadorBean.semeador.naoEvangelico ? 'NÃO' : 'SIM'}" />
+								</div>
+
+								<div style="margin-left: 20px; float: left;">
+									<h:outputLabel value="Bela Vista ?" style="font-weight:bold" />
+									<h:outputText
+										value="#{semeadorBean.semeador.belaVista ? 'SIM' : 'NÃO'}" />
+								</div>
+
+
+								<div style="margin-left: 20px; float: left;">
+									<h:outputLabel value="Oferta tempo para a obra de Deus ?"
+										style="font-weight:bold" />
+									<h:outputText
+										value="#{semeadorBean.semeador.ofertaTempo ? 'SIM' : 'NÃO'}" />
+								</div>
+
+							</t:div>
+						</p:dialog>
+
+					</t:div>
+
+					<t:div id="blocoDeEdicao"
+						rendered="#{not semeadorBean.pesquisando}">
+
+						<br />
+						<br />
+
+						<div id="dp" style="margim-top: 10px;">
+							<p:fieldset legend="Dados Pessoais" style="margim-top: 10px;">
+								<p:focus for="nome" />
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Nome" for="nome" />
+									<p:inputText value="#{semeadorBean.semeador.nome}"
+										required="true" requiredMessage="Informe o nome do semeador"
+										id="nome" size="50"
+										onkeydown="this.value = this.value.toUpperCase()"
+										onkeyup="this.value = this.value.toUpperCase()" />
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Cpf" for="cpf" />
+									<p:inputMask value="#{semeadorBean.semeador.cpf}" id="cpf"
+										mask="999.999.999-99" validator="cpfValidator"
+										validatorMessage="Cpf inválido">
+									</p:inputMask>
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="RG" for="rg" />
+									<p:inputText value="#{semeadorBean.semeador.rg}" id="rg"
+										styleClass="rg" onfocus="numeric()" />
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Nascimento" for="nascimento" />
+									<p:inputMask mask="99/99/9999" required="true"
+										requiredMessage="Informe a data de nascimento"
+										value="#{semeadorBean.semeador.dataNascimento}"
+										id="nascimento" />
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Profissão" for="profissao" />
+									<p:inputText value="#{semeadorBean.semeador.profissao}"
+										id="profissao"
+										onkeydown="this.value = this.value.toUpperCase()"
+										onkeyup="this.value = this.value.toUpperCase()" />
+								</div>
+
+								<div class="clear"></div>
+							</p:fieldset>
+						</div>
+
+						<br />
+						<br />
+
+						<div style="margim-top: 10px;">
+							<p:fieldset legend="Endereço / Contato">
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Email" for="email" />
+									<p:inputText value="#{semeadorBean.semeador.email}" id="email"
+										validatorMessage="Formato de email inválido" size="50"
+										onkeydown="this.value = this.value.toLowerCase()"
+										onkeyup="this.value = this.value.toLowerCase()">
+										<f:validateRegex pattern="[\w[-.]]+@[\w[-.]]*[a-zA-Z[-_]]" />
+									</p:inputText>
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Telefone" for="telefone" />
+									<p:inputMask value="#{semeadorBean.semeador.telefone}"
+										id="telefone" mask="(99) 9999-9999" />
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Tipo" for="tipo" />
+									<p:selectOneMenu value="#{semeadorBean.semeador.tipoTelefone}"
+										id="tipo">
+										<f:selectItems value="#{semeadorBean.tipoTelefoneValues}" />
+									</p:selectOneMenu>
+								</div>
+
+								<div class="clear" />
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Cep" for="cep" />
+									<p:inputMask value="#{semeadorBean.semeador.cep}" id="cep"
+										mask="99999-999">
+
+										<p:ajax event="change"
+											listener="#{semeadorBean.verificaEndereco}"
+											update="logradouro bairro cidade uf" />
+									</p:inputMask>
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Logradouro" for="logradouro" />
+									<p:inputText value="#{semeadorBean.semeador.logradouro}"
+										id="logradouro" size="50"
+										onkeydown="this.value = this.value.toUpperCase()"
+										onkeyup="this.value = this.value.toUpperCase()" />
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Número" for="numero" />
+									<p:inputText value="#{semeadorBean.semeador.numero}"
+										id="numero" onkeydown="this.value = this.value.toUpperCase()"
+										onkeyup="this.value = this.value.toUpperCase()" />
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Complemento" for="complemento" />
+									<p:inputText value="#{semeadorBean.semeador.complemento}"
+										id="complemento"
+										onkeydown="this.value = this.value.toUpperCase()"
+										onkeyup="this.value = this.value.toUpperCase()" />
+								</div>
+								<div class="clear" />
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Bairro" for="bairro" />
+									<p:inputText value="#{semeadorBean.semeador.bairro}"
+										id="bairro" onkeydown="this.value = this.value.toUpperCase()"
+										onkeyup="this.value = this.value.toUpperCase()" />
+								</div>
+
+
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Cidade" for="cidade" />
+									<p:inputText value="#{semeadorBean.semeador.cidade}"
+										id="cidade" onkeydown="this.value = this.value.toUpperCase()"
+										onkeyup="this.value = this.value.toUpperCase()" />
+								</div>
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="UF" for="uf" />
+									<p:inputMask value="#{semeadorBean.semeador.estado}" id="uf"
+										style="text-transform:uppercase" mask="a*" maxlength="2"
+										size="19" />
+								</div>
+
+								<div class="clear" />
+
+							</p:fieldset>
+						</div>
+
+						<br />
+						<br />
+
+						<div style="margim-top: 10px;">
+							<p:fieldset legend="Igreja" style="margim-top:10px;">
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel value="Não Evangélico" />
+									<p:selectBooleanCheckbox
+										value="#{semeadorBean.semeador.naoEvangelico}">
+										<p:ajax update="@parent" listener="#{semeadorBean.checkCombo}"
+											global="false" />
+									</p:selectBooleanCheckbox>
+								</div>
+
+								<t:div id="bv" rendered="#{not semeadorBean.naoEvangelico}">
+									<div style="margin-left: 10px; float: left;">
+										<h:outputLabel value="Bela Vista ?" />
+										<p:selectBooleanCheckbox
+											value="#{semeadorBean.semeador.belaVista}" id="ckBox"
+											onchange="showHideCombo()" />
+
+									</div>
+								</t:div>
+
+								<!-- <t:div id="comboCon" rendered="#{semeadorBean.belaVista}"> -->
+								<div style="margin-left: 10px; float: left; display: none" id="combo">
+									<h:outputLabel value="Congregação" for="comboCongregacao" />
+									<!-- 
+									<p:selectOneMenu id="comboCongregacao"
+										value="#{semeadorBean.congregacao}">
+										<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+										<f:selectItems value="#{congregacaoDao.listaCongregacoes}"
+											var="congregacao"
+											itemLabel="#{congregacao}"
+											itemValue="#{congregacao}" />
+										<p:ajax listener="#{semeadorBean.loadCongregacao}" global="false"/>	
+										
+									</p:selectOneMenu>
+									-->
+									<p:autoComplete value="#{semeadorBean.congregacao}"
+										id="congregacao" var="c" itemLabel="#{c.toString}"
+										itemValue="#{c}" forceSelection="true" size="46"
+										completeMethod="#{semeadorBean.buscaCongregacaoPorNome}"
+										minQueryLength="3" scrollHeight="200"
+										onkeydown="this.value = this.value.toUpperCase()"
+										onkeyup="this.value = this.value.toUpperCase()">
+
+										<p:column>  
+			                    	#{c.nome}  
+               					</p:column>
+
+										<p:column>  
+				                    	#{c.tipoCongregacao.value}  
+                					</p:column>
+
+										<p:ajax event="itemSelect"
+											listener="#{semeadorBean.handleSelectCongregacao}" />
+									</p:autoComplete>
+								</div>
+								<!-- </t:div> -->
+
+								<div style="margin-left: 10px; float: left;">
+									<h:outputLabel
+										value="Você ofertaria seu tempo para a Obra de Deus?"
+										for="oferta" />
+									<p:selectOneMenu id="oferta"
+										value="#{semeadorBean.semeador.ofertaTempo}">
+										<f:selectItem itemLabel="SIM" itemValue="true" />
+										<f:selectItem itemLabel="NÃO" itemValue="false" />
+									</p:selectOneMenu>
+								</div>
+
+								<div class="clear" />
+
+							</p:fieldset>
+						</div>
+
+
+						<div align="left" style="margin-left: 10px; margin-top: 20px;">
+
+							<div style="float: left;">
+								<h:commandButton value="#{text['label.salvar']}"
+									action="#{semeadorBean.insert}"
+									rendered="#{semeadorBean.adicionando}"
+									styleClass="botao-default">
+									<f:ajax execute="@form" render="@form :mensagens" />
+								</h:commandButton>
+							</div>
+
+							<div style="float: left;">
+								<h:commandButton value="#{text['label.atualizar']}"
+									action="#{semeadorBean.update}"
+									rendered="#{semeadorBean.editando}" styleClass="botao-default">
+									<f:ajax execute="@form" render="@form :mensagens" />
+								</h:commandButton>
+							</div>
+
+							<div style="margin-left: 10px; float: left;">
+								<h:commandButton value="#{text['label.voltar']}"
+									action="#{semeadorBean.voltar}" styleClass="botao-default"
+									immediate="true">
+									<f:ajax execute="@form" render="@form :mensagens" />
+								</h:commandButton>
+							</div>
+							<div class="clear" />
+						</div>
+					</t:div>
+
+				</p:panel>
+
+			</h:form>
+		</ui:define>
+
+	</ui:composition>
+
+</h:body>
+</html>

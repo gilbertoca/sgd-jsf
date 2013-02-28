@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/template/template_padrao.xhtml">
+
+	<ui:define name="conteudo">
+
+		<p />
+		<p/>
+		<p/>
+		<p/>
+		<p:outputPanel autoUpdate="true">
+			<h:panelGroup id="mensagens" layout="block">
+				<p:messages id="messages" showDetail="false" autoUpdate="true" />
+			</h:panelGroup>
+		</p:outputPanel>
+		<!-- 
+		DashBoard com atalhos para Cadastro de Semeador, Lançamento de Doação, Relatório de Lançamento Básico,
+		Relatório de Participação, etc... 
+		-->
+		<br />
+		<h:form id="form">
+			<p:panel id="board" header="Dashboard">
+
+				<div align="center">
+					<div style="margin-left: 40px; float: left;">
+						<p:panel id="lancamento" header="Lançamento" style="width:170px;">
+							<h:outputLink value="/sgd/pages/sistema/doacao/doacao.xhtml">
+								<h:graphicImage value="#{text['icon.lancamento']}"
+									id="doacao" />
+							</h:outputLink>
+							<!-- <h:outputText value="Registrar Doações" /> -->
+							<p:tooltip for="lancamento" value="Registrar Doação" />
+						</p:panel>
+					</div>
+					<div style="margin-left: 20px; float: left;">
+						<p:panel id="semeador" header="Semeadores" style="width:170px;">
+							<h:outputLink value="/sgd/pages/sistema/semeador/semeador.xhtml">
+								<h:graphicImage value="#{text['icon.semeador']}" />
+							</h:outputLink>
+							<p:tooltip for="semeador" value="Cadastrar Semeador" />
+						</p:panel>
+					</div>
+					<div style="margin-left: 20px; float: left;">
+						<p:panel id="campanha" header="Campanhas" style="width:170px;" rendered="#{usuarioWeb.usuarioAdmin}">
+							<h:outputLink value="/sgd/pages/sistema/campanha/campanha.xhtml">
+								<h:graphicImage value="#{text['icon.campanha']}" />
+							</h:outputLink>
+							<p:tooltip for="campanha" value="Cadastrar Campanha" />
+						</p:panel>
+					</div>
+					<div style="margin-left: 20px; float: left;">
+						<p:panel id="projeto" header="Projetos" style="width:170px;" rendered="#{usuarioWeb.usuarioAdmin}">
+							<h:outputLink value="/sgd/pages/sistema/projeto/projeto.xhtml">
+								<h:graphicImage value="#{text['icon.projeto']}" />
+							</h:outputLink>
+							<p:tooltip for="projeto" value="Cadastrar projeto" />
+						</p:panel>
+					</div>
+					<div style="margin-left: 20px; float: left;">
+						<p:panel id="relatorio" header="Relatório Básico"
+							style="width:170px;" rendered="#{usuarioWeb.usuarioAdmin}">
+							<h:outputLink
+								value="/sgd/pages/sistema/relatorio/doacao/lancamento.xhtml">
+							<h:graphicImage value="#{text['icon.relatorio']}" />
+							</h:outputLink>
+							<p:tooltip for="relatorio" value="Relatório de Lançamento Básico" />
+						</p:panel>
+					</div>
+					<div style="margin-left: 20px; float: left;">
+						<p:panel id="estatistica" header="Estatística"
+							style="width:170px;" rendered="#{usuarioWeb.usuarioAdmin}">
+							<h:outputLink
+								value="/sgd/pages/sistema/relatorio/participacao/estatistica.xhtml"
+								rendered="false">
+							</h:outputLink>
+							<h:graphicImage value="#{text['icon.estatistica']}" />
+							<p:tooltip for="estatistica"
+								value="Relatório de Participação por Congregação" />
+						</p:panel>
+					</div>
+				</div>
+				<div class="clear" />
+			</p:panel>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+
+</html>

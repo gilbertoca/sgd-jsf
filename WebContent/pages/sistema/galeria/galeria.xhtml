@@ -1,0 +1,139 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+</h:head>
+<h:body>
+
+	<ui:composition template="/template/template_padrao.xhtml">
+		<ui:define name="conteudo">
+
+			<p />
+
+			<p:outputPanel autoUpdate="true">
+				<h:panelGroup id="mensagens" layout="block">
+					<p:messages id="messages" showDetail="false" autoUpdate="true" />
+				</h:panelGroup>
+			</p:outputPanel>
+			<h:form binding="#{galeriaBean.form}" id="form" prependId="false">
+
+				<t:saveState value="#{galeriaBean.galeria}" />
+				<t:saveState value="#{galeriaBean.galerias}" />
+				<t:saveState value="#{galeriaBean.state}" />
+
+				<p />
+				<p:panel header="Cadastro de Igrejas">
+
+					<t:div id="blocoDePesquisa" rendered="#{galeriaBean.pesquisando}">
+						<div align="right" style="margin-bottom: 10px;">
+							<h:commandButton value="#{text['label.adicionar']}"
+								action="#{galeriaBean.prepareInsert}" styleClass="botao-default">
+								<f:ajax render="@form" />
+							</h:commandButton>
+						</div>
+						<p />
+						<p:dataTable id="tabela" value="#{galeriaBean.listaGalerias}"
+							var="galeria" rowClasses="odd, even" paginator="true"
+							paginatorPosition="bottom" rows="5"
+							emptyMessage="#{text['table.empty']}"
+							rowsPerPageTemplate="10,20,30,50,100">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Descrição" />
+								</f:facet>
+								<h:outputText value="#{galeria.descricao}" />
+							</p:column>
+							
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="URL" />
+								</f:facet>
+								<h:outputText value="#{galeria.url}" />
+							</p:column>
+
+							<p:column headerText="Ações">
+								<div style="margin-left: 10px; float: left;">
+									<h:commandButton value="#{text['label.editar']}"
+										action="#{galeriaBean.prepareUpdate(galeria)}"
+										styleClass="botao-default">
+										<f:ajax render="@form" />
+									</h:commandButton>
+								</div>
+								<div style="margin-left: 10px; float: left;">
+									<h:commandButton value="#{text['label.remover']}"
+										action="#{galeriaBean.remove}"
+										onclick="return confirm('Deseja realmente remover este vídeo?');"
+										styleClass="botao-default">
+										<f:ajax render="@form :mensagens" />
+										<f:setPropertyActionListener target="#{galeriaBean.galeria}"
+											value="#{galeria}" />
+									</h:commandButton>
+								</div>
+							</p:column>
+
+							<f:facet name="footer">							 
+		            			Total #{galeriaBean.listaGalerias.size()} Registro(s)  
+        					</f:facet>
+
+						</p:dataTable>
+
+					</t:div>
+
+					<t:div id="blocoDeEdicao" rendered="#{not galeriaBean.pesquisando}">
+
+						<p:focus for="descricao" />
+						<div style="margin-left: 10px; float: left;">
+							<h:outputLabel value="Descrição" for="descricao" />
+							<p:inputText value="#{galeriaBean.galeria.descricao}"
+								required="true" requiredMessage="Informe a descrição do vídeo"
+								id="descricao" size="45" onkeyup="this.value = this.value.toUpperCase()" onkeydown="this.value = this.value.toUpperCase()"/>
+						</div>
+						<div style="margin-left: 10px; float: left;">
+							<h:outputLabel value="Url" for="url" />
+							<p:inputText value="#{galeriaBean.galeria.url}" required="true"
+								requiredMessage="Informe o caminho do vídeo" id="url" size="45" />
+						</div>
+
+						<div class="clear"></div>
+						<div align="left" style="margin-left: 10px; margin-top: 20px;">
+
+							<div style="float: left;">
+								<h:commandButton value="#{text['label.salvar']}"
+									action="#{galeriaBean.insert}"
+									rendered="#{galeriaBean.adicionando}"
+									styleClass="botao-default">
+									<f:ajax execute="@form" render="@form :mensagens" />
+								</h:commandButton>
+							</div>
+							<div style="float: left;">
+								<h:commandButton value="#{text['label.atualizar']}"
+									action="#{galeriaBean.update}"
+									rendered="#{galeriaBean.editando}" styleClass="botao-default">
+									<f:ajax execute="@form" render="@form :mensagens" />
+								</h:commandButton>
+							</div>
+							<div style="margin-left: 10px; float: left;">
+								<h:commandButton value="#{text['label.voltar']}"
+									action="#{galeriaBean.voltar}" styleClass="botao-default"
+									immediate="true">
+									<f:ajax execute="@form" render="@form :mensagens" />
+								</h:commandButton>
+							</div>
+							<div class="clear" />
+						</div>
+					</t:div>
+
+				</p:panel>
+
+			</h:form>
+		</ui:define>
+
+	</ui:composition>
+
+</h:body>
+</html>
