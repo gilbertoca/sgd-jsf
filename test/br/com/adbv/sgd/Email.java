@@ -24,16 +24,16 @@ public class Email {
 		Session session = Session.getDefaultInstance(props,
 			new javax.mail.Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication("lsaviofreitas@gmail.com","P4$$W0rd");
+					return new PasswordAuthentication("email@gmail.com","senha");
 				}
 			});
  
 		try {
  
 			Message message = new MimeMessage(session);
-			message.setFrom(new InternetAddress("lsaviofreitas@gmail.com"));
+			message.setFrom(new InternetAddress("email@gmail.com"));
 			message.setRecipients(Message.RecipientType.TO,
-					InternetAddress.parse("lsfreitas@sms.fortaleza.ce.gov.br"));
+					InternetAddress.parse("email@email.br"));
 			message.setSubject("Testing Subject");
 			message.setText("Dear Mail Crawler," +
 					"\n\n No spam to my email, please!");
