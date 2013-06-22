@@ -14,7 +14,7 @@ public class EmailUtil {
 
 	 private static final String HOSTNAME = "smtp.gmail.com";
 	 private static final String USERNAME = "lsaviofreitas";
-	 private static final String PASSWORD = "P4$$W0rd";
+	 private static final String PASSWORD = "n√£o digo";
 	 private static final String EMAILORIGEM = "lsaviofreitas@gmail.com";
 
 	 public static Email conectaEmail() throws EmailException {
@@ -38,6 +38,6 @@ public class EmailUtil {
 		FacesContext.getCurrentInstance().addMessage(
 				null,
 				new FacesMessage(FacesMessage.SEVERITY_INFO,
-						"E-mail enviado com sucesso", "InformaÁ„o"));
+						"E-mail enviado com sucesso", "Informa√ß√£o"));
 	}
 }
